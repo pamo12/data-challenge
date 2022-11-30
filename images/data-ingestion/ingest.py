@@ -3,9 +3,18 @@
 import pandas as pd
 import sqlalchemy
 from sqlalchemy import Table, Column, Date, String, Index
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
-engine = sqlalchemy.create_engine("mysql://codetest:swordfish@database/codetest")
+SOURCE_PATH = os.getenv('SOURCE_PATH')
+MYSQL_USER = os.getenv('MYSQL_USER')
+MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD')
+MYSQL_HOST = os.getenv('MYSQL_HOST')
+MYSQL_DATABASE = os.getenv('MYSQL_DATABASE')
+
+engine = sqlalchemy.create_engine(f"mysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}/{MYSQL_DATABASE}")
 connection = engine.connect()
 metadata = sqlalchemy.schema.MetaData(engine)
 
@@ -39,14 +48,14 @@ def initialize():
 
 def ingest():
     try:
-        people_df = pd.read_csv('/data/people.csv')
+        people_df = pd.read_csv(f"{SOURCE_PATH}/people.csv")
     except FileNotFoundError:
-        print("File /data/people.csv not found.")
+        print(f"File {SOURCE_PATH}/people.csv not found.")
 
     try:
-        places_df = pd.read_csv('/data/places.csv')
+        places_df = pd.read_csv(f"{SOURCE_PATH}/places.csv")
     except FileNotFoundError:
-        print("File /data/places.csv not found.")
+        print(f"File {SOURCE_PATH}/places.csv not found.")
     
     people_df.to_sql('people', connection, chunksize=1000, dtype=None, method=None, schema=None, if_exists='append', index=False, index_label=None)
     places_df.to_sql('places', connection, chunksize=1000, dtype=None, method=None, schema=None, if_exists='append', index=False, index_label=None)

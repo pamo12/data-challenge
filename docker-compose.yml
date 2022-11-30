@@ -6,11 +6,8 @@ services:
     platform: linux/amd64
     command:
       - "--default-authentication-plugin=mysql_native_password"
-    environment:
-      - MYSQL_RANDOM_ROOT_PASSWORD=yes
-      - MYSQL_DATABASE=codetest
-      - MYSQL_USER=codetest
-      - MYSQL_PASSWORD=swordfish
+    env_file:
+      - .env
     ports:
       - "3306:3306"
     restart: always
@@ -28,6 +25,8 @@ services:
     command: ["./ingest.py"]
     volumes:
       - ./data:/data
+    env_file:
+      - .env
 
   data-pipeline:
     image: data-pipeline
@@ -35,3 +34,5 @@ services:
     command: ["./pipeline.py"]
     volumes:
       - ./data:/data
+    env_file:
+      - .env
