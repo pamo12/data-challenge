@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
+import sys
 import pandas as pd
 import sqlalchemy
-from sqlalchemy import Table, Column, Date, String, Index
+from sqlalchemy import Table, Column, Date, String
 import os
 from dotenv import load_dotenv
 
@@ -19,6 +20,7 @@ connection = engine.connect()
 metadata = sqlalchemy.schema.MetaData(engine)
 
 def initialize():
+    print("(Re-)creation of Schema started.")
     people = Table(
         "people",
         metadata,
@@ -47,6 +49,7 @@ def initialize():
     metadata.create_all()
 
 def ingest():
+    people_df = places_df = pd.DataFrame
     try:
         people_df = pd.read_csv(f"{SOURCE_PATH}/people.csv")
     except FileNotFoundError:
@@ -57,10 +60,13 @@ def ingest():
     except FileNotFoundError:
         print(f"File {SOURCE_PATH}/places.csv not found.")
     
-    people_df.to_sql('people', connection, chunksize=1000, dtype=None, method=None, schema=None, if_exists='append', index=False, index_label=None)
-    places_df.to_sql('places', connection, chunksize=1000, dtype=None, method=None, schema=None, if_exists='append', index=False, index_label=None)
+    if not people_df.empty:
+        people_df.to_sql('people', connection, chunksize=1000, dtype=None, method=None, schema=None, if_exists='append', index=False, index_label=None)
+    if not places_df.empty:
+        places_df.to_sql('places', connection, chunksize=1000, dtype=None, method=None, schema=None, if_exists='append', index=False, index_label=None)
 
 
 if __name__ == '__main__':
-    initialize()
+    if len(sys.argv) > 1 and sys.argv[1].lower() == "initialize":
+        initialize()
     ingest()

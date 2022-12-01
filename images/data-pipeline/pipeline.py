@@ -29,7 +29,7 @@ def transform(people_df, places_df):
     return count_df
     
 def load(result_df):
-    result_file = os.path.abspath(f"{TARGET_PATH}/result.json")
+    result_file = os.path.abspath(f"{TARGET_PATH}/summary_output.json")
     result_df.to_json(path_or_buf=result_file)
 
 if __name__ == '__main__':

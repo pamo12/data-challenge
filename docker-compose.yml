@@ -22,7 +22,6 @@ services:
   data-ingestion:
     image: data-ingestion
     build: images/data-ingestion
-    command: ["./ingest.py"]
     volumes:
       - ./data:/data
     env_file:
@@ -31,7 +30,6 @@ services:
   data-pipeline:
     image: data-pipeline
     build: images/data-pipeline
-    command: ["./pipeline.py"]
     volumes:
       - ./data:/data
     env_file:
